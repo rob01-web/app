@@ -311,14 +311,29 @@ const LandingPage = ({ user, onLogin, onLogout }) => {
                 </ul>
               </div>
               <div className="flex justify-center space-x-4">
-                <Button variant="outline" data-testid="view-sample-report-btn">
-                  <Eye className="mr-2 h-4 w-4" /> View Report
-                </Button>
-                <Button className="bg-emerald-600 hover:bg-emerald-700" data-testid="download-sample-report-btn">
-                  <Download className="mr-2 h-4 w-4" /> Download PDF
+                <Button 
+                  onClick={async () => {
+                    try {
+                      const response = await axios.get(`${API}/sample-report/download`, { responseType: 'blob' });
+                      const url = window.URL.createObjectURL(new Blob([response.data]));
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.setAttribute('download', 'InvestorIQ_Sample_Report_Toronto.pdf');
+                      document.body.appendChild(link);
+                      link.click();
+                      link.remove();
+                      toast.success('Sample report downloaded!');
+                    } catch (error) {
+                      toast.error('Failed to download sample report');
+                    }
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700" 
+                  data-testid="download-sample-report-btn"
+                >
+                  <Download className="mr-2 h-4 w-4" /> Download Sample Report
                 </Button>
               </div>
-              <p className="text-xs text-gray-500">Sample PDF will be available once uploaded</p>
+              <p className="text-xs text-gray-500">12-Unit Toronto Property Analysis</p>
             </CardContent>
           </Card>
         </div>
