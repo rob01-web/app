@@ -605,14 +605,34 @@ async def get_user_analyses(current_user: User = Depends(get_current_user)):
     analyses = await db.analyses.find({"user_id": current_user.id}, {"_id": 0}).to_list(100)
     return analyses
 
-# Sample Report Route
+# Sample Report Routes
 @api_router.get("/sample-report")
-async def get_sample_report():
-    # Return placeholder for now
+async def get_sample_report_info():
+    sample_pdf_path = REPORT_DIR / "sample_report.pdf"
+    if sample_pdf_path.exists():
+        return {
+            "available": True,
+            "property": "2845 Bloor Street West, Toronto",
+            "units": 12,
+            "type": "Multifamily",
+            "download_url": "/api/sample-report/download"
+        }
     return {
-        "message": "Sample report placeholder",
-        "note": "Upload your sample PDF in the morning"
+        "available": False,
+        "message": "Sample report not yet available"
     }
+
+@api_router.get("/sample-report/download")
+async def download_sample_report():
+    sample_pdf_path = REPORT_DIR / "sample_report.pdf"
+    if not sample_pdf_path.exists():
+        raise HTTPException(status_code=404, detail="Sample report not available")
+    
+    return FileResponse(
+        str(sample_pdf_path),
+        media_type='application/pdf',
+        filename="InvestorIQ_Sample_Report_Toronto.pdf"
+    )
 
 # Payment Routes
 @api_router.post("/payments/checkout")
