@@ -312,8 +312,19 @@ const LandingPage = ({ user, onLogin, onLogout }) => {
               </div>
               <div className="flex justify-center space-x-4">
                 <Button 
-                  onClick={() => {
-                    window.open(`${API}/sample-report/download`, '_blank');
+                  onClick={async () => {
+                    try {
+                      const link = document.createElement('a');
+                      link.href = `${API}/sample-report/download`;
+                      link.download = 'InvestorIQ_Sample_Report_Toronto.pdf';
+                      link.target = '_blank';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      toast.success('Downloading sample report...');
+                    } catch (error) {
+                      toast.error('Download failed');
+                    }
                   }}
                   className="bg-emerald-600 hover:bg-emerald-700" 
                   data-testid="download-sample-report-btn"
@@ -321,7 +332,7 @@ const LandingPage = ({ user, onLogin, onLogout }) => {
                   <Download className="mr-2 h-4 w-4" /> Download Sample Report
                 </Button>
               </div>
-              <p className="text-xs text-gray-500">12-Unit Toronto Property • CAD $4.85M</p>
+              <p className="text-xs text-gray-500">2845 Bloor St W, Toronto • 12 Units • CAD $4.85M</p>
             </CardContent>
           </Card>
         </div>
